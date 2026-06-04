@@ -46,11 +46,6 @@ def _inject_home_css():
                 background: transparent;
             }
 
-            [data-testid="stSidebar"] {
-                background: #121212;
-                border-right: 1px solid var(--spire-border);
-            }
-
             .block-container {
                 max-width: 1180px;
                 padding-top: 2rem;
