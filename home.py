@@ -1,3 +1,6 @@
+from base64 import b64encode
+from pathlib import Path
+
 from data.player_data import player
 from utils.html import render_html
 
@@ -5,15 +8,21 @@ from utils.html import render_html
 QUEST_PROGRESS = 73
 COMMUNITY_PROGRESS = 68
 HOPE_PROGRESS = 82
+HERO_IMAGE = Path(__file__).parent / "assets" / "background" / "spireidil.jpeg"
 
 
 def _fmt_number(value):
     return f"{value:,}"
 
 
+def _image_data_uri(path):
+    return f"data:image/jpeg;base64,{b64encode(path.read_bytes()).decode('ascii')}"
+
+
 def _inject_home_css():
-    render_html(
-        """
+    hero_image_uri = _image_data_uri(HERO_IMAGE)
+
+    css = """
         <style>
             :root {
                 --spire-purple: #7C3AED;
@@ -54,17 +63,17 @@ def _inject_home_css():
             }
 
             .hero-banner {
-                min-height: 315px;
+                min-height: 430px;
                 display: flex;
                 align-items: flex-end;
                 overflow: hidden;
                 border: 1px solid rgba(124, 58, 237, 0.42);
                 border-radius: 8px;
                 background:
-                    linear-gradient(90deg, rgba(26, 26, 26, 0.96) 0%, rgba(26, 26, 26, 0.72) 42%, rgba(26, 26, 26, 0.2) 100%),
-                    linear-gradient(0deg, rgba(26, 26, 26, 0.96), rgba(26, 26, 26, 0.05) 58%),
-                    url("https://images.unsplash.com/photo-1518709268805-4e9042af2176?auto=format&fit=crop&w=1800&q=80");
-                background-position: center;
+                    linear-gradient(90deg, rgba(26, 26, 26, 0.94) 0%, rgba(26, 26, 26, 0.66) 42%, rgba(26, 26, 26, 0.18) 100%),
+                    linear-gradient(0deg, rgba(26, 26, 26, 0.98), rgba(26, 26, 26, 0.08) 60%),
+                    url("__HERO_IMAGE_URI__");
+                background-position: center 42%;
                 background-size: cover;
                 box-shadow: 0 22px 70px rgba(0, 0, 0, 0.42);
             }
@@ -292,12 +301,14 @@ def _inject_home_css():
                 }
 
                 .hero-banner {
-                    min-height: 360px;
+                    min-height: 420px;
+                    background-position: center top;
                 }
             }
         </style>
-        """,
-    )
+        """.replace("__HERO_IMAGE_URI__", hero_image_uri)
+
+    render_html(css)
 
 
 def show_home():
